@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DevFlow - Documentação do Backend</title>
+  <style>
+    /* ============================================================
+       DevFlow — Documentação de Rotas
+       Paleta idêntica ao global.css do frontend
+       ============================================================ */
+    :root {
+      --color-primary-300: #b9a5ff;
+      --color-primary-400: #9a84ff;
+      --color-primary-500: #8666ff;
+      --color-primary-600: #6d4eff;
+      --color-primary-soft: rgba(134, 102, 255, 0.16);
+      --color-primary-glow: rgba(109, 78, 255, 0.35);
+
+      --color-success-400: #5fe5b6;
+      --color-success-500: #34d399;
+      --color-warning-500: #fbbf24;
+      --color-danger-500: #f87171;
+
+      --color-bg: #08070e;
+      --color-bg-elevated: #0c0a15;
+      --color-surface: #100e1b;
+      --color-surface-2: #161428;
+      --color-surface-raised: #14121f;
+
+      --color-border: rgba(255, 255, 255, 0.08);
+      --color-border-strong: rgba(255, 255, 255, 0.14);
+
+      --color-text: #f2f1f7;
+      --color-text-secondary: #dcd9ea;
+      --color-text-muted: #a29fb4;
+      --color-text-faint: #7d7995;
+
+      --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', Consolas, monospace;
+
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --radius-full: 999px;
+
+      --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.35);
+      --shadow-glow: 0 8px 28px var(--color-primary-glow);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-bg);
+      color: var(--color-text);
+      min-height: 100vh;
+      padding: 64px 20px 100px;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* brilho roxo de fundo */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(600px 400px at 15% 0%, var(--color-primary-soft), transparent 70%),
+        radial-gradient(700px 500px at 90% 100%, rgba(109, 78, 255, 0.1), transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    ::selection {
+      background: var(--color-primary-500);
+      color: #fff;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      background: rgba(134, 102, 255, 0.12);
+      border: 1px solid rgba(134, 102, 255, 0.25);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 13.5px;
+      color: var(--color-primary-300);
+    }
+
+    /* ---------- Header ---------- */
+    header { text-align: center; margin-bottom: 36px; }
+
+    .logo {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--color-primary-400), var(--color-primary-600));
+      box-shadow: var(--shadow-glow);
+      display: grid;
+      place-items: center;
+      font-size: 30px;
+    }
+
+    header h1 {
+      font-size: 40px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(92deg, var(--color-primary-400) 10%, #6aa6ff 90%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    header p {
+      margin-top: 10px;
+      font-size: 18px;
+      color: var(--color-text-secondary);
+    }
+
+    .intro {
+      text-align: center;
+      max-width: 700px;
+      margin: 26px auto 48px;
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--color-text-muted);
+    }
+
+    /* ---------- Título de seção ---------- */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 56px 0 10px;
+    }
+
+    .divider::before, .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--color-border-strong);
+    }
+
+    .divider h2 {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+      background: linear-gradient(92deg, var(--color-primary-400) 10%, #6aa6ff 90%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .module-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text-faint);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 34px 0 14px;
+    }
+
+    /* ---------- Cards ---------- */
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 22px 24px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.2s ease, transform 0.15s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(134, 102, 255, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .badge {
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      padding: 5px 14px;
+      border-radius: var(--radius-full);
+      font-family: var(--font-mono);
+    }
+
+    .badge.post { background: rgba(134, 102, 255, 0.18); color: var(--color-primary-300); border: 1px solid rgba(134, 102, 255, 0.4); }
+    .badge.get  { background: rgba(52, 211, 153, 0.14); color: var(--color-success-400); border: 1px solid rgba(52, 211, 153, 0.35); }
+
+    .rota-nome {
+      font-size: 16.5px;
+      font-weight: 700;
+      color: var(--color-text);
+      font-family: var(--font-mono);
+    }
+
+    .lock { font-size: 14px; }
+
+    .card p {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--color-text-secondary);
+    }
+
+    .respostas {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .status {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 4px 11px;
+      border-radius: var(--radius-full);
+    }
+
+    .status.ok   { background: rgba(52, 211, 153, 0.12); border: 1px solid rgba(52, 211, 153, 0.35); color: var(--color-success-400); }
+    .status.err  { background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.35); color: var(--color-danger-500); }
+    .status.warn { background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.35); color: var(--color-warning-500); }
+
+    /* ---------- Footer ---------- */
+    footer {
+      text-align: center;
+      margin-top: 70px;
+      font-size: 13.5px;
+      color: var(--color-text-faint);
+    }
+
+    footer code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: var(--color-primary-400);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <div class="logo">⌥</div>
+      <h1>Documentação do Backend</h1>
+      <p>Organização de Rotas, Dados e Lógica do <strong>DevFlow</strong>.</p>
+    </header>
+
+    <p class="intro">
+      Abaixo estão todas as rotas já configuradas no backend. 🔒 indica rota que exige
+      autenticação via token JWT no header <code>Authorization</code>.
+      O conteúdo desta página não inclui APIs fictícias, apenas a documentação das rotas reais.
+    </p>
+
+    <!-- ==================== USUÁRIO / AUTH ==================== -->
+    <div class="divider"><h2>Rotas Disponíveis</h2></div>
+    <div class="module-label">Rotas de Usuário / Auth</div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="badge post">POST</span>
+        <span class="rota-nome">/cadastro</span>
+      </div>
+      <p>
+        Cadastro de usuários. Body: <code>{ name, email, senha }</code>.
+        Valida campos obrigatórios, verifica e-mail duplicado (retorna <code>409</code> se já existir),
+        faz hash da senha com bcrypt e retorna o token JWT (válido por 7 dias).
+      </p>
+      <div class="respostas">
+        <span class="status ok">201 — token</span>
+        <span class="status err">400 — campos ausentes</span>
+        <span class="status err">409 — e-mail em uso</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="badge post">POST</span>
+        <span class="rota-nome">/login</span>
+      </div>
+      <p>
+        Login de usuários. Body: <code>{ email, senha }</code>.
+        Busca o usuário pelo e-mail, compara a senha com bcrypt e retorna o token JWT.
+      </p>
+      <div class="respostas">
+        <span class="status ok">200 — token</span>
+        <span class="status err">400 — campos ausentes</span>
+        <span class="status err">401 — credenciais inválidas</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="badge get">GET</span>
+        <span class="rota-nome">/perfil</span>
+        <span class="lock">🔒</span>
+      </div>
+      <p>
+        Retorna os dados do usuário logado a partir do payload do token JWT.
+        Resposta: <code>{ id, email }</code>.
+      </p>
+      <div class="respostas">
+        <span class="status ok">200 — dados do perfil</span>
+        <span class="status err">401 — token ausente / inválido</span>
+      </div>
+    </div>
+
+    <!-- ==================== TIMES ==================== -->
+    <div class="module-label">Rotas de Times</div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="badge post">POST</span>
+        <span class="rota-nome">/time/criarTime</span>
+        <span class="lock">🔒</span>
+      </div>
+      <p>
+        Criação de time. Body: <code>{ nome }</code>.
+        Cria o time e adiciona o usuário logado como membro com role <code>owner</code>
+        dentro de uma transação no banco.
+      </p>
+      <div class="respostas">
+        <span class="status ok">201 — { message, team }</span>
+        <span class="status err">400 — nome obrigatório</span>
+        <span class="status err">500 — erro ao criar</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="badge get">GET</span>
+        <span class="rota-nome">/time/user/:id</span>
+      </div>
+      <p>
+        Lista os usuários membros de um time pelo ID do time.
+        Retorna <code>id</code>, <code>nome</code>, <code>email</code>, <code>avatar</code>
+        e o papel de cada membro (<code>tmm_role</code>).
+      </p>
+      <div class="respostas">
+        <span class="status ok">200 — lista de membros</span>
+        <span class="status warn">⚠️ rota sem autenticação</span>
+        <span class="status err">400 — ID inválido</span>
+      </div>
+    </div>
+
+    <!-- ==================== PROJETOS ==================== -->
+    <div class="module-label">Rotas de Projetos</div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="badge get">GET</span>
+        <span class="rota-nome">/projetos/resumo</span>
+        <span class="lock">🔒</span>
+      </div>
+      <p>
+        Resumo dos projetos do usuário logado. Conta o total de projetos em que ele é membro
+        e quantos foram criados no mês corrente.
+        Resposta: <code>{ total, novosNoMes }</code>.
+      </p>
+      <div class="respostas">
+        <span class="status ok">200 — resumo</span>
+        <span class="status err">500 — falha ao buscar</span>
+      </div>
+    </div>
+
+    <footer>
+      DevFlow Backend · Express v5 · JWT Auth · Documentação gerada automaticamente em <code>GET /</code>
+    </footer>
+  </div>
+</body>
+</html>
