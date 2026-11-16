@@ -359,6 +359,29 @@
       </div>
     </div>
 
+    <div class="card">
+      <div class="card-head">
+        <span class="badge post">POST</span>
+        <span class="rota-nome">/time/adduser/:id</span>
+        <span class="lock">🔒</span>
+      </div>
+      <p>
+        Adiciona um membro ao time. Body: <code>{ email, role }</code> (role opcional, aceita
+        <code>admin</code> ou <code>member</code>, padrão <code>member</code>).
+        Apenas <code>owner</code> ou <code>admin</code> do time podem adicionar membros.
+        Retorna os dados do membro adicionado (<code>id</code>, <code>nome</code>, <code>email</code>,
+        <code>avatar</code> e <code>tmm_role</code>).
+      </p>
+      <div class="respostas">
+        <span class="status ok">201 — { message, membro }</span>
+        <span class="status err">400 — ID / e-mail / role inválidos</span>
+        <span class="status err">403 — sem permissão</span>
+        <span class="status err">404 — usuário não encontrado</span>
+        <span class="status err">409 — já é membro do time</span>
+        <span class="status err">500 — erro ao adicionar</span>
+      </div>
+    </div>
+
     <!-- ==================== PROJETOS ==================== -->
     <div class="module-label">Rotas de Projetos</div>
 

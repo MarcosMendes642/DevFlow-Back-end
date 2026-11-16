@@ -35,7 +35,7 @@ async function criarTime(req, res) {
     return res.status(500).json({ error: "Erro ao criar time" });
   }
 }
-// get lista de usuario logado
+
 async function buscarUsuariosDoTime(req, res) {
   const { id } = req.params;
 
@@ -66,9 +66,74 @@ async function buscarUsuariosDoTime(req, res) {
     return res.status(500).json({ error: "Erro ao buscar usuários do time." });
   }
 }
+
+async function adicionarMembro(req, res) {
+  const{id} = req.params;
+  const{email, role} = req.body;
+
+  let timeId;
+  try{
+    timeId= BigInt(id);
+  }catch {return res.status(400).json({error: "ID do time invalido"})}
+  
+  if(!email || email.trim()===""){
+    return res.status(400).json({error: "O email é obrigatorio"})
+  }
+
+  const rolesPermitidas = ["admin", "member"];
+  const novaRole = role ?? "member";
+  if(!rolesPermitidas.includes(novaRole)){
+    return res.status(400).json({error: "Role invalida. Use admin ou member"})
+  }
+
+  try{
+    const solicitante = await prisma.team_member.findUnique({
+      where: {
+        tm_id_tmm_usu_id_tmm: {
+          tm_id_tmm: timeId,
+          usu_id_tmm: BigInt(req.user.id),
+      },
+      }
+    })
+    if(!solicitante || !["owner", "admin"].includes(solicitante.tmm_role)){
+      return res.status(403).json({ error: "Apenas owner ou admin podem adicionar membros." });
+    }
+
+    
+    const usuario = await prisma.usuario.findUnique({
+      where: { usu_email: email.trim().toLowerCase() },
+      select: { usu_id: true, usu_name: true, usu_email: true, usu_avatar_url: true },
+    });
+
+    if (!usuario) {
+      return res.status(404).json({ error: "Usuário não encontrado." });
+    }
+
+    
+    await prisma.team_member.create({
+      data: {
+        tm_id_tmm: timeId,
+        usu_id_tmm: usuario.usu_id,
+        tmm_role: novaRole,
+      },
+    });
+
+    return res.status(201).json({
+      message: "Membro adicionado",
+      membro: { ...usuario, tmm_role: novaRole },
+    });
+  } catch (error) {
+    
+    if (error.code === "P2002") {
+      return res.status(409).json({ error: "Este usuário já faz parte do time." });
+    }
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao adicionar membro." });
+  }
+}
 // Detalhes do time (com membros)
 //Edita o nome (só owner)
 //Apaga o time (só owner)
-//Adiciona membro (só owner/admin)
+
 //Remove membro
-module.exports = { criarTime, buscarUsuariosDoTime };
+module.exports = { criarTime, buscarUsuariosDoTime, adicionarMembro};
